@@ -1,0 +1,28 @@
+# ========================================================
+# Fire Watcher — Dependências do Projeto (TCC II)
+# ========================================================
+
+# Backend & API
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+sqlalchemy>=2.0.35
+pydantic>=2.9.0
+pydantic-settings>=2.5.0
+python-dotenv>=1.0.1
+httpx>=0.27.0
+requests>=2.32.0
+
+# Processamento de Dados & Sensoriamento Remoto
+numpy>=2.0.0
+pandas>=2.2.0
+earthengine-api>=1.0.0
+
+# Frontend & Visualização (Streamlit & Mapas)
+streamlit>=1.39.0
+folium>=0.17.0
+streamlit-folium>=0.22.0
+plotly>=5.24.0
+
+# Testes Automatizados & Qualidade
+pytest>=8.3.0
+pytest-asyncio>=0.24.0

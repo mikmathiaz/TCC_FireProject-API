@@ -1,0 +1,13 @@
+data_hora,satelite,pais,estado,municipio,bioma,dias_sem_chuva,precipitacao,risco_fogo,latitude,longitude,frp
+2026/09/15 16:30:00,AQUA_M-T,Brasil,Distrito Federal,Brasília,Cerrado,32,0.0,0.95,-15.6821,-47.9812,24.5
+2026/09/15 16:35:00,AQUA_M-T,Brasil,Distrito Federal,Brasília,Cerrado,32,0.0,0.98,-15.6543,-47.9654,42.1
+2026/09/16 04:12:00,NOAA-20,Brasil,Distrito Federal,Brasília,Cerrado,33,0.0,0.92,-15.6210,-47.9230,18.7
+2026/09/16 17:05:00,TERRA_M-M,Brasil,Distrito Federal,Brasília,Cerrado,33,0.0,0.96,-15.7102,-48.0123,35.0
+2026/09/17 16:20:00,AQUA_M-T,Brasil,Distrito Federal,Brasília,Cerrado,34,0.0,1.00,-15.6655,-47.9450,55.8
+2026/09/17 18:40:00,SNPP,Brasil,Distrito Federal,Brasília,Cerrado,34,0.0,0.97,-15.6350,-47.9120,29.4
+2026/09/18 16:45:00,AQUA_M-T,Brasil,Distrito Federal,Brasília,Cerrado,35,0.0,0.99,-15.6980,-47.9950,48.2
+2026/09/18 17:10:00,TERRA_M-M,Brasil,Distrito Federal,Brasília,Cerrado,35,0.0,0.94,-15.6420,-47.9380,21.0
+2026/09/19 16:15:00,AQUA_M-T,Brasil,Distrito Federal,Brasília,Cerrado,36,0.0,1.00,-15.6730,-47.9570,62.4
+2026/09/20 04:30:00,NOAA-20,Brasil,Distrito Federal,Brasília,Cerrado,37,0.0,0.89,-15.6150,-47.9050,15.6
+2026/09/20 16:50:00,AQUA_M-T,Brasil,Distrito Federal,Brasília,Cerrado,37,0.0,0.98,-15.7250,-48.0310,38.9
+2026/09/21 16:30:00,AQUA_M-T,Brasil,Distrito Federal,Brasília,Cerrado,38,0.0,1.00,-15.6590,-47.9510,71.2

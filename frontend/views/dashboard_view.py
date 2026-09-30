@@ -5,6 +5,7 @@ Apresenta o mapa geoespacial da AOI, camadas de risco espectral e focos do INPE.
 
 import streamlit as st
 from streamlit_folium import st_folium
+from frontend.components.ui_utils import render_html
 from frontend.controllers.api_controller import api_controller
 from frontend.components.metric_cards import render_metric_card
 from frontend.components.map_component import render_map
@@ -15,7 +16,7 @@ def render_dashboard_view():
     """
     Renderiza a interface do Dashboard Principal.
     """
-    st.markdown('<div class="section-title">Painel de Monitoramento Geoespacial</div>', unsafe_allow_html=True)
+    render_html('<div class="section-title">Painel de Monitoramento Geoespacial</div>')
 
     # Consulta de Áreas de Interesse
     aois = api_controller.get_aois()
@@ -95,13 +96,13 @@ def render_dashboard_view():
             description="Estação meteorológica Open-Meteo"
         )
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    render_html("<br>")
 
     # Painel Principal com Mapa e Gráficos
     col_mapa, col_graficos = st.columns([3, 2])
 
     with col_graficos:
-        st.markdown('<div class="section-title">Estatísticas da Área</div>', unsafe_allow_html=True)
+        render_html('<div class="section-title">Estatísticas da Área</div>')
         exibir_inpe = st.checkbox("Exibir Camada de Focos INPE (Ground Truth)", value=True)
         
         celulas = analise_selecionada.get("indices", []) if analise_selecionada else []
@@ -112,7 +113,7 @@ def render_dashboard_view():
             st.info("Execute uma análise para visualizar a distribuição dos índices.")
 
     with col_mapa:
-        st.markdown('<div class="section-title">Distribuição Espacial de Risco (Sentinel-2)</div>', unsafe_allow_html=True)
+        render_html('<div class="section-title">Distribuição Espacial de Risco (Sentinel-2)</div>')
         focos_inpe = api_controller.get_inpe_focos(limit=100) if exibir_inpe else []
 
         mapa = render_map(

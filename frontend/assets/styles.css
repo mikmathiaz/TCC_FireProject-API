@@ -62,30 +62,33 @@ html, body, [class*="css"] {
     background: #ffffff;
     border: 1px solid var(--color-border);
     border-radius: 6px;
-    padding: 1rem 1.25rem;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 1.1rem 1.25rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.25);
 }
 
 .metric-label {
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--color-text-muted);
+    color: #94a3b8;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-bottom: 0.25rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.35rem;
 }
 
 .metric-value {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: 700;
-    color: var(--color-text-main);
+    color: #f8fafc;
     letter-spacing: -0.02em;
 }
 
 .metric-description {
     font-size: 0.75rem;
-    color: var(--color-text-muted);
-    margin-top: 0.25rem;
+    color: #94a3b8;
+    margin-top: 0.35rem;
 }
 
 /* Badges de Classificação de Risco */
@@ -100,45 +103,47 @@ html, body, [class*="css"] {
 }
 
 .badge-critico {
-    background: #fef2f2;
-    color: var(--color-risk-critico);
-    border: 1px solid #fecaca;
+    background: rgba(220, 38, 38, 0.2);
+    color: #fca5a5;
+    border: 1px solid rgba(220, 38, 38, 0.5);
 }
 
 .badge-alto {
-    background: #fff7ed;
-    color: var(--color-risk-alto);
-    border: 1px solid #fed7aa;
+    background: rgba(234, 88, 12, 0.2);
+    color: #fdba74;
+    border: 1px solid rgba(234, 88, 12, 0.5);
 }
 
 .badge-moderado {
-    background: #fefce8;
-    color: var(--color-risk-moderado);
-    border: 1px solid #fef08a;
+    background: rgba(202, 138, 4, 0.2);
+    color: #fef08a;
+    border: 1px solid rgba(202, 138, 4, 0.5);
 }
 
 .badge-baixo {
-    background: #f0fdf4;
-    color: var(--color-risk-baixo);
-    border: 1px solid #bbf7d0;
+    background: rgba(22, 163, 74, 0.2);
+    color: #86efac;
+    border: 1px solid rgba(22, 163, 74, 0.5);
 }
 
 /* Painéis de Seção */
 .section-panel {
-    background: #f8fafc;
-    border: 1px solid var(--color-border);
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 6px;
     padding: 1.25rem;
     margin-bottom: 1.25rem;
 }
 
 .section-title {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 600;
-    color: var(--color-text-main);
-    margin-bottom: 0.75rem;
+    color: #E6EDF7;
+    margin-top: 0.5rem;
+    margin-bottom: 0.85rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid rgba(230, 237, 247, 0.15);
+    letter-spacing: -0.01em;
 }
 
 /* Tabela Técnica */

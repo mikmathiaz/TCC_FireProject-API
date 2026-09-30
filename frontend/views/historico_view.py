@@ -5,6 +5,7 @@ Apresenta o histórico cronológico de análises e o módulo de validação cruz
 
 import streamlit as st
 import pandas as pd
+from frontend.components.ui_utils import render_html
 from frontend.controllers.api_controller import api_controller
 from frontend.components.metric_cards import render_metric_card
 
@@ -13,7 +14,7 @@ def render_historico_view():
     """
     Renderiza a interface do painel de histórico e validação cruzada.
     """
-    st.markdown('<div class="section-title">Histórico de Análises e Validação Cruzada (BDQueimadas/INPE)</div>', unsafe_allow_html=True)
+    render_html('<div class="section-title">Histórico de Análises e Validação Cruzada (BDQueimadas/INPE)</div>')
 
     historico = api_controller.get_analysis_history()
     if not historico:
@@ -35,7 +36,7 @@ def render_historico_view():
     ]
     st.dataframe(df_show, use_container_width=True)
 
-    st.markdown("<hr style='margin: 1.5rem 0;'>", unsafe_allow_html=True)
+    st.divider()
 
     # Módulo de Validação Cruzada
     st.markdown("#### Módulo de Validação Cruzada contra Focos do INPE")
@@ -71,7 +72,7 @@ def render_historico_view():
     # Relatórios de Validação Salvos
     validacoes = api_controller.get_validation_history()
     if validacoes:
-        st.markdown("<br>", unsafe_allow_html=True)
+        render_html("<br>")
         st.markdown("#### Relatórios de Validação Registrados")
         
         ultima = validacoes[0]

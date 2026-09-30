@@ -29,9 +29,25 @@ def render_map(
     m = folium.Map(
         location=[centro_lat, centro_lon],
         zoom_start=11,
-        tiles="CartoDB positron",
+        tiles=None,
         control_scale=True
     )
+
+    # Camadas base sem chave de API com atribuição oficial
+    folium.TileLayer(
+        tiles="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        attr="Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community",
+        name="Satélite (Esri World Imagery)",
+        overlay=False,
+        control=True
+    ).add_to(m)
+
+    folium.TileLayer(
+        tiles="OpenStreetMap",
+        name="Mapa Base (OpenStreetMap)",
+        overlay=False,
+        control=True
+    ).add_to(m)
 
     # Limite da Área de Interesse (Bounding Box)
     bounds = [

@@ -12,6 +12,7 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 import streamlit as st
+from frontend.components.ui_utils import render_html
 from frontend.controllers.api_controller import api_controller
 from frontend.components.header import render_header
 from frontend.views.dashboard_view import render_dashboard_view
@@ -30,7 +31,7 @@ st.set_page_config(
 css_path = ROOT_DIR / "frontend" / "assets" / "styles.css"
 if css_path.exists():
     with open(css_path, "r", encoding="utf-8") as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+        render_html(f"<style>{f.read()}</style>")
 
 # Verificação de status da API backend
 status_backend = api_controller.check_health()
@@ -55,7 +56,7 @@ with st.sidebar:
         label_visibility="collapsed"
     )
 
-    st.markdown("<hr style='margin: 1.5rem 0;'>", unsafe_allow_html=True)
+    st.divider()
     st.markdown("#### Informações do Sistema")
     st.caption(f"Status da API: {'Online' if api_online else 'Offline'}")
     st.caption("Resolução Espacial: 10m - 20m")

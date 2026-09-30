@@ -4,6 +4,7 @@ Apresenta a inspeção individualizada das células geográficas e dos 4 índice
 """
 
 import streamlit as st
+from frontend.components.ui_utils import render_html
 from frontend.controllers.api_controller import api_controller
 from frontend.components.metric_cards import render_metric_card
 from frontend.components.charts import plot_radar_profile
@@ -13,7 +14,7 @@ def render_detalhe_view():
     """
     Renderiza a interface de detalhamento por célula geográfica.
     """
-    st.markdown('<div class="section-title">Detalhamento e Análise Biofísica por Célula</div>', unsafe_allow_html=True)
+    render_html('<div class="section-title">Detalhamento e Análise Biofísica por Célula</div>')
 
     historico = api_controller.get_analysis_history()
     if not historico:
@@ -54,7 +55,7 @@ def render_detalhe_view():
         celula_label = st.selectbox("Selecione a Coordenada da Célula:", list(mapa_celulas.keys()))
         celula = mapa_celulas[celula_label]
 
-    st.markdown("<hr style='margin: 1.5rem 0;'>", unsafe_allow_html=True)
+    st.divider()
 
     col_resumo, col_radar = st.columns([3, 2])
 
@@ -71,7 +72,7 @@ def render_detalhe_view():
                 value=f"{celula['ndvi']:.3f}",
                 description="Fórmula: (B8 - B4) / (B8 + B4)"
             )
-            st.markdown("<br>", unsafe_allow_html=True)
+            render_html("<br>")
             render_metric_card(
                 label="NDII (Água na Copa Foliar)",
                 value=f"{celula['ndii']:.3f}",
@@ -84,7 +85,7 @@ def render_detalhe_view():
                 value=f"{celula['nbr']:.3f}",
                 description="Fórmula: (B8 - B12) / (B8 + B12)"
             )
-            st.markdown("<br>", unsafe_allow_html=True)
+            render_html("<br>")
             render_metric_card(
                 label="PSRI (Senescência da Biomassa)",
                 value=f"{celula['psri']:.3f}",
@@ -94,7 +95,7 @@ def render_detalhe_view():
     with col_radar:
         st.plotly_chart(plot_radar_profile(celula), use_container_width=True)
 
-    st.markdown("<hr style='margin: 1.5rem 0;'>", unsafe_allow_html=True)
+    st.divider()
 
     # Metadados da Cena de Satélite
     st.markdown("#### Metadados da Cena Orbital")

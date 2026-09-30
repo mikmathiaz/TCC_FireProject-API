@@ -29,11 +29,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+from pathlib import Path
+from fastapi.staticfiles import StaticFiles
+
 # Registro dos roteadores de endpoints
 app.include_router(config_aoi.router, prefix="/api/v1")
 app.include_router(analysis.router, prefix="/api/v1")
 app.include_router(validation.router, prefix="/api/v1")
 app.include_router(weather.router, prefix="/api/v1")
+
+# Montagem da tela de login standalone (HTML/CSS/JS + Three.js)
+LOGIN_DIR = Path(__file__).resolve().parent.parent.parent / "frontend" / "login"
+if LOGIN_DIR.exists():
+    app.mount("/login", StaticFiles(directory=str(LOGIN_DIR), html=True), name="login")
 
 
 @app.get("/", tags=["Healthcheck"])

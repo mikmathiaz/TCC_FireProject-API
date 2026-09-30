@@ -5,6 +5,7 @@ Apresenta o painel de configuração de AOIs, intervalo temporal e ingestão do 
 
 import streamlit as st
 from datetime import date, timedelta
+from frontend.components.ui_utils import render_html
 from frontend.controllers.api_controller import api_controller
 
 
@@ -12,7 +13,7 @@ def render_configuracao_view():
     """
     Renderiza a interface de configurações e disparos.
     """
-    st.markdown('<div class="section-title">Configurações e Parâmetros Operacionais</div>', unsafe_allow_html=True)
+    render_html('<div class="section-title">Configurações e Parâmetros Operacionais</div>')
 
     tab_proc, tab_aoi, tab_inpe = st.tabs([
         "Processamento de Satélite",
@@ -72,7 +73,7 @@ def render_configuracao_view():
                 st.write(f"**Descrição:** {a.get('descricao', 'Sem descrição informada.')}")
                 st.write(f"**Coordenadas Delimitadoras (Bounding Box):** Latitudes [{a['min_lat']}, {a['max_lat']}] | Longitudes [{a['min_lon']}, {a['max_lon']}]")
 
-        st.markdown("<hr style='margin: 1.5rem 0;'>", unsafe_allow_html=True)
+        st.divider()
         st.markdown("#### Cadastrar Nova Área de Interesse")
         with st.form("form_nova_aoi"):
             nome_aoi = st.text_input("Nome da Região / Parque:", placeholder="Ex: Parque Nacional da Chapada dos Veadeiros")

@@ -1,5 +1,6 @@
 """
-Cliente de comunicação HTTP entre o Frontend Streamlit e a API FastAPI.
+Controlador de Comunicação com a API Backend — Fire Watcher
+Gerencia todas as chamadas HTTP entre as Views e o servidor FastAPI.
 """
 
 import os
@@ -9,12 +10,13 @@ from typing import Dict, Any, List, Optional
 BACKEND_URL = os.getenv("BACKEND_API_URL", "http://127.0.0.1:8000")
 
 
-class APIClient:
+class APIController:
     def __init__(self, base_url: str = BACKEND_URL):
         self.base_url = base_url.rstrip("/")
         self.api_v1 = f"{self.base_url}/api/v1"
 
     def check_health(self) -> Dict[str, Any]:
+        """Verifica a integridade e conectividade do backend."""
         try:
             res = requests.get(f"{self.base_url}/", timeout=3.0)
             if res.status_code == 200:
@@ -23,8 +25,9 @@ class APIClient:
             pass
         return {"online": False, "data": {}}
 
-    # AOI
+    # Áreas de Interesse (AOI)
     def get_aois(self) -> List[Dict[str, Any]]:
+        """Recupera lista de Áreas de Interesse cadastradas."""
         try:
             res = requests.get(f"{self.api_v1}/aoi/", timeout=5.0)
             if res.status_code == 200:
@@ -34,6 +37,7 @@ class APIClient:
         return []
 
     def create_aoi(self, payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Cadastra uma nova Área de Interesse."""
         try:
             res = requests.post(f"{self.api_v1}/aoi/", json=payload, timeout=5.0)
             if res.status_code in [200, 201]:
@@ -42,17 +46,19 @@ class APIClient:
             pass
         return None
 
-    # Análises
+    # Análises e Processamento
     def process_analysis(self, payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        """Dispara rotina de processamento espectral para uma AOI e período."""
         try:
             res = requests.post(f"{self.api_v1}/analysis/process", json=payload, timeout=30.0)
             if res.status_code in [200, 201]:
                 return res.json()
-        except Exception as e:
-            print(f"Erro ao processar análise: {e}")
+        except Exception:
+            pass
         return None
 
     def get_analysis_history(self) -> List[Dict[str, Any]]:
+        """Recupera o histórico cronológico de análises."""
         try:
             res = requests.get(f"{self.api_v1}/analysis/history", timeout=5.0)
             if res.status_code == 200:
@@ -62,6 +68,7 @@ class APIClient:
         return []
 
     def get_analysis_details(self, analysis_id: int) -> Optional[Dict[str, Any]]:
+        """Recupera os dados completos de uma análise e suas células."""
         try:
             res = requests.get(f"{self.api_v1}/analysis/{analysis_id}", timeout=10.0)
             if res.status_code == 200:
@@ -70,8 +77,9 @@ class APIClient:
             pass
         return None
 
-    # Clima
-    def get_current_weather(self, lat: float, lon: float) -> Dict[str, Any]:
+    # Meteorologia
+    def get_weather(self, lat: float, lon: float) -> Dict[str, Any]:
+        """Consulta variáveis atmosféricas na API Open-Meteo."""
         try:
             res = requests.get(
                 f"{self.api_v1}/weather/current",
@@ -84,8 +92,9 @@ class APIClient:
             pass
         return {}
 
-    # INPE & Validação
+    # Validação e Focos INPE
     def load_inpe_sample(self) -> Dict[str, Any]:
+        """Carrega a base histórica de teste do BDQueimadas."""
         try:
             res = requests.post(f"{self.api_v1}/validation/inpe/load-default-sample", timeout=10.0)
             if res.status_code == 200:
@@ -95,6 +104,7 @@ class APIClient:
         return {"status": "erro"}
 
     def run_cross_validation(self, analysis_id: int, tolerance_m: float = 1000.0) -> Optional[Dict[str, Any]]:
+        """Executa validação cruzada espacial entre a análise e o BDQueimadas."""
         try:
             res = requests.post(
                 f"{self.api_v1}/validation/inpe/cross-validate/{analysis_id}",
@@ -108,6 +118,7 @@ class APIClient:
         return None
 
     def get_inpe_focos(self, limit: int = 100) -> List[Dict[str, Any]]:
+        """Recupera registros de focos do INPE cadastrados."""
         try:
             res = requests.get(f"{self.api_v1}/validation/inpe/focos", params={"limite": limit}, timeout=5.0)
             if res.status_code == 200:
@@ -117,6 +128,7 @@ class APIClient:
         return []
 
     def get_validation_history(self) -> List[Dict[str, Any]]:
+        """Recupera relatórios históricos de validação cruzada."""
         try:
             res = requests.get(f"{self.api_v1}/validation/history", timeout=5.0)
             if res.status_code == 200:
@@ -126,4 +138,4 @@ class APIClient:
         return []
 
 
-api_client = APIClient()
+api_controller = APIController()

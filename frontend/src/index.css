@@ -1,6 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-ember-900: #3a0d0d;
+  --color-ember-800: #731a1a;
+  --color-ember-700: #a62626;
+  --color-ember-500: #e64a19;
+  --color-ember-400: #ff7043;
+}
 
 @layer base {
   body {

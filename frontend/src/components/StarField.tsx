@@ -1,9 +1,10 @@
 import { useRef, useMemo, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
+import { VISUAL_CONFIG } from '../config/visual';
 
-const MAX_PARTICLES = 10000;
-const AMBIENT_COUNT = 6000;
+const MAX_PARTICLES = VISUAL_CONFIG.PARTICLE_COUNT + 1000;
+const AMBIENT_COUNT = VISUAL_CONFIG.PARTICLE_COUNT;
 
 const vertexShader = `
   attribute vec3 instancePos;
@@ -18,32 +19,23 @@ const vertexShader = `
     vUv = uv;
     vInfo = instanceInfo;
     
-    float age = instanceInfo.x;
-    float size = instanceInfo.y;
-    float seed = instanceInfo.z;
-    float type = instanceInfo.w;
-    
     vec3 vel = instanceVel;
     float speed = length(vel);
     vSpeed = speed;
     
+    float size = instanceInfo.y;
+    
     vec3 vPos = position; 
     
-    // Thickness and length
-    float thickness = max(0.5, size * 0.8);
-    float len = max(thickness * 1.5, size * 2.0 + speed * 0.35);
+    // Stretch logic: very limited
+    float stretch = clamp(1.0 + (speed * 0.02), 1.0, ${VISUAL_CONFIG.STREAK_MAX.toFixed(2)});
     
-    // 15% are tiny dots
-    if (seed < 0.15) {
-      len = thickness;
-    }
+    vPos.x *= size;
+    vPos.y *= (size * stretch);
     
-    vPos.x *= thickness;
-    vPos.y *= len;
-    
-    // Align with velocity
+    // Align with velocity if moving fast enough
     vec3 up = vec3(0.0, 1.0, 0.0);
-    vec3 dir = speed > 0.1 ? vel / speed : up;
+    vec3 dir = speed > 5.0 ? vel / speed : up;
     
     vec3 camDir = vec3(0.0, 0.0, 1.0); 
     vec3 right = cross(dir, camDir);
@@ -56,12 +48,6 @@ const vertexShader = `
     
     vec3 finalPos = instancePos + vPos;
     
-    // Foreground particles (3%)
-    if (seed > 0.97) {
-       finalPos.z += 30.0;
-       vPos *= 3.0;
-    }
-
     vec4 mvPosition = modelViewMatrix * vec4(finalPos, 1.0);
     gl_Position = projectionMatrix * mvPosition;
   }
@@ -75,94 +61,90 @@ const fragmentShader = `
   void main() {
     float age = vInfo.x;
     float seed = vInfo.z;
+    float type = vInfo.w;
     
-    // Gradient along length: vUv.y goes 0 to 1. Head is at vUv.y = 1
-    // For dots, it's radial
+    // Shape: Circular point with soft halo
     float dist = distance(vUv, vec2(0.5));
-    float shape = 0.0;
+    float shape = smoothstep(0.5, 0.0, dist);
+    shape = pow(shape, 1.5); // Sharp core, soft edge
     
-    if (seed < 0.15) {
-      // Dot
-      shape = smoothstep(0.5, 0.1, dist);
+    // Colors: 35% Red, 35% Orange, 20% Amber, 10% Warm White
+    vec3 cRed = vec3(0.88, 0.16, 0.06);     // #e02a10
+    vec3 cDarkRed = vec3(0.78, 0.12, 0.05); // #c8200e
+    vec3 cOrange = vec3(1.0, 0.48, 0.10);   // #ff7a1a
+    vec3 cAmber = vec3(1.0, 0.70, 0.28);    // #ffb347
+    vec3 cWhite = vec3(1.0, 0.88, 0.69);    // #ffe2b0
+    
+    vec3 baseColor = vec3(0.0);
+    if (seed < 0.35) {
+      baseColor = mix(cRed, cDarkRed, seed / 0.35);
+    } else if (seed < 0.70) {
+      baseColor = cOrange;
+    } else if (seed < 0.90) {
+      baseColor = cAmber;
     } else {
-      // Streak: intense head, fading tail, transversal falloff
-      float transversal = smoothstep(0.5, 0.1, abs(vUv.x - 0.5));
-      float longitudinal = vUv.y; // 1 at top, 0 at bottom
-      shape = transversal * longitudinal;
-      shape = pow(shape, 1.5);
+      baseColor = cWhite;
     }
     
-    // Color over age/temperature
-    // Colors: White-yellow -> Yellow -> Orange -> Red -> Dark Red -> Transparent
-    vec3 cWhite = vec3(1.0, 0.95, 0.76); // #fff4c2
-    vec3 cYellow = vec3(1.0, 0.83, 0.35); // #ffd45a
-    vec3 cOrange = vec3(1.0, 0.54, 0.12); // #ff8a1f
-    vec3 cRed = vec3(0.88, 0.16, 0.06);   // #e02a10
-    vec3 cDarkRed = vec3(0.48, 0.07, 0.03); // #7a1208
-    
-    // Base temp determined by age (0 is hot, 1 is cold)
-    float temp = min(1.0, age * 1.5 + (1.0 - vUv.y) * 0.5); 
-    
-    vec3 color = vec3(0.0);
-    if (temp < 0.1) color = mix(cWhite, cYellow, temp / 0.1);
-    else if (temp < 0.4) color = mix(cYellow, cOrange, (temp - 0.1) / 0.3);
-    else if (temp < 0.7) color = mix(cOrange, cRed, (temp - 0.4) / 0.3);
-    else color = mix(cRed, cDarkRed, (temp - 0.7) / 0.3);
-    
-    // Flicker
-    float flicker = 0.8 + 0.2 * sin(seed * 100.0 + age * 20.0);
-    
-    float alpha = shape * (1.0 - smoothstep(0.8, 1.0, age)) * flicker;
-    
-    // Foreground particles are softer/blurred
-    if (seed > 0.97) {
-      alpha *= 0.5;
+    // Interaction particles (type 2) can be hotter initially
+    if (type == 2.0 && age < 0.2) {
+       baseColor = mix(cWhite, baseColor, age / 0.2);
     }
+    
+    // Twinkle effect
+    float twinkle = 0.7 + 0.3 * sin(seed * 100.0 + age * 30.0);
+    
+    // Fade in and out
+    float lifeAlpha = smoothstep(0.0, 0.1, age) * (1.0 - smoothstep(0.8, 1.0, age));
+    
+    float alpha = shape * lifeAlpha * twinkle * ${VISUAL_CONFIG.BRIGHTNESS.toFixed(2)};
     
     if (alpha < 0.01) discard;
     
-    // Halo glow
-    gl_FragColor = vec4(color, alpha);
+    gl_FragColor = vec4(baseColor, alpha);
   }
 `;
 
 export default function StarField() {
   const { viewport } = useThree();
   const instancedMeshRef = useRef<THREE.InstancedMesh>(null);
-  const geometryRef = useRef<THREE.InstancedBufferGeometry>(null);
-  
+  const geometryRef = useRef<THREE.BufferGeometry>(null);
 
-
-  // Arrays
   const data = useMemo(() => {
     return {
       pos: new Float32Array(MAX_PARTICLES * 3),
       vel: new Float32Array(MAX_PARTICLES * 3),
-      info: new Float32Array(MAX_PARTICLES * 4), // age, size, seed, type (0=dead, 1=ambient, 2=mouse)
+      info: new Float32Array(MAX_PARTICLES * 4),
     };
   }, []);
 
-  // Initialize ambient particles
+  const getParticleSize = (seed: number) => {
+    // 80% 1-1.5, 17% 2-3, 3% 3-5
+    if (seed < 0.8) return VISUAL_CONFIG.SIZE_MIN + Math.random() * 0.5;
+    if (seed < 0.97) return 2.0 + Math.random() * 1.0;
+    return 3.0 + Math.random() * 2.0;
+  };
+
   useEffect(() => {
     const w = viewport.width;
     const h = viewport.height;
     for (let i = 0; i < AMBIENT_COUNT; i++) {
-      data.pos[i * 3] = (Math.random() - 0.5) * w * 1.5;
-      data.pos[i * 3 + 1] = (Math.random() - 0.5) * h * 1.5;
-      data.pos[i * 3 + 2] = (Math.random() - 0.5) * 50;
+      data.pos[i * 3] = (Math.random() - 0.5) * w * 1.2;
+      data.pos[i * 3 + 1] = (Math.random() - 0.5) * h * 1.2;
+      data.pos[i * 3 + 2] = (Math.random() - 0.5) * 50; // Depth
       
-      data.vel[i * 3] = (Math.random() - 0.5) * 10;
-      data.vel[i * 3 + 1] = 5 + Math.random() * 20; // Updraft
-      data.vel[i * 3 + 2] = (Math.random() - 0.5) * 10;
+      data.vel[i * 3] = (Math.random() - 0.5) * VISUAL_CONFIG.DRIFT_SPEED;
+      data.vel[i * 3 + 1] = VISUAL_CONFIG.DRIFT_SPEED * 0.5 + Math.random() * VISUAL_CONFIG.DRIFT_SPEED;
+      data.vel[i * 3 + 2] = (Math.random() - 0.5) * VISUAL_CONFIG.DRIFT_SPEED;
       
+      const seed = Math.random();
       data.info[i * 4] = Math.random(); // age
-      data.info[i * 4 + 1] = 0.5 + Math.random() * 2.0; // size
-      data.info[i * 4 + 2] = Math.random(); // seed
+      data.info[i * 4 + 1] = getParticleSize(seed); // size
+      data.info[i * 4 + 2] = seed; // seed
       data.info[i * 4 + 3] = 1; // ambient
     }
   }, [viewport, data]);
 
-  // Mouse Interaction State
   const mouseState = useRef({
     x: 0, y: 0, 
     vx: 0, vy: 0,
@@ -173,11 +155,13 @@ export default function StarField() {
 
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
+      // Ignore if starting on card
+      if ((e.target as HTMLElement).closest('.group\\/card')) return;
+
       const ms = mouseState.current;
       const now = performance.now();
       const dt = Math.max(1, now - ms.lastTime);
       
-      // Screen to world
       const x = (e.clientX / window.innerWidth) * 2 - 1;
       const y = -(e.clientY / window.innerHeight) * 2 + 1;
       const wx = x * viewport.width / 2;
@@ -190,30 +174,42 @@ export default function StarField() {
       ms.lastTime = now;
       ms.lastActivity = now;
     };
-    const onMouseDown = () => { mouseState.current.isDown = true; mouseState.current.lastActivity = performance.now(); };
-    const onMouseUp = () => { mouseState.current.isDown = false; mouseState.current.lastActivity = performance.now(); };
+    
+    const onMouseDown = (e: MouseEvent) => {
+      if ((e.target as HTMLElement).closest('.group\\/card')) return;
+      mouseState.current.isDown = true; 
+      mouseState.current.lastActivity = performance.now();
+    };
+    
+    const onMouseUp = () => { 
+      mouseState.current.isDown = false; 
+      mouseState.current.lastActivity = performance.now(); 
+    };
 
-    // Click burst
     const onClick = (e: MouseEvent) => {
+      if ((e.target as HTMLElement).closest('.group\\/card')) return;
+      
       const wx = ((e.clientX / window.innerWidth) * 2 - 1) * viewport.width / 2;
       const wy = (-(e.clientY / window.innerHeight) * 2 + 1) * viewport.height / 2;
       
       let spawned = 0;
-      for (let i = AMBIENT_COUNT; i < MAX_PARTICLES && spawned < 40; i++) {
+      for (let i = AMBIENT_COUNT; i < MAX_PARTICLES && spawned < 16; i++) {
         if (data.info[i * 4 + 3] === 0 || data.info[i * 4] >= 1.0) {
-          // Spawn
           data.pos[i * 3] = wx;
           data.pos[i * 3 + 1] = wy;
-          data.pos[i * 3 + 2] = 5;
+          data.pos[i * 3 + 2] = 5; // Slightly in front
           
           const angle = Math.random() * Math.PI * 2;
-          const speed = 30 + Math.random() * 80;
+          // One strong spark, others tiny
+          const isMain = spawned === 0;
+          const speed = isMain ? 60 : 15 + Math.random() * 30;
+          
           data.vel[i * 3] = Math.cos(angle) * speed;
-          data.vel[i * 3 + 1] = Math.sin(angle) * speed + 20; // +updraft
-          data.vel[i * 3 + 2] = (Math.random() - 0.5) * 20;
+          data.vel[i * 3 + 1] = Math.sin(angle) * speed;
+          data.vel[i * 3 + 2] = (Math.random() - 0.5) * 10;
           
           data.info[i * 4] = 0; // age
-          data.info[i * 4 + 1] = 1.0 + Math.random() * 3.0; // size
+          data.info[i * 4 + 1] = isMain ? 6.0 : 1.5 + Math.random(); // size
           data.info[i * 4 + 2] = Math.random(); // seed
           data.info[i * 4 + 3] = 2; // fx
           spawned++;
@@ -237,15 +233,17 @@ export default function StarField() {
   useFrame((state, delta) => {
     if (!geometryRef.current) return;
     
+    // Limit delta to prevent huge jumps on tab switch
+    const safeDelta = Math.min(delta, 0.05);
+    
     const w = viewport.width;
     const h = viewport.height;
     const ms = mouseState.current;
     const timeSinceActivity = performance.now() - ms.lastActivity;
-    const returningToNormal = timeSinceActivity > 3000;
+    const returningToNormal = timeSinceActivity > (VISUAL_CONFIG.RETURN_SECONDS * 1000);
 
     let activeCount = AMBIENT_COUNT;
 
-    // Simulate Particles
     for (let i = 0; i < MAX_PARTICLES; i++) {
       const type = data.info[i * 4 + 3];
       if (type === 0) continue; // dead
@@ -257,49 +255,50 @@ export default function StarField() {
       let vy = data.vel[i * 3 + 1];
 
       if (type === 1) { // Ambient
-        age += delta * (0.1 + Math.random() * 0.1);
+        age += safeDelta * (0.05 + Math.random() * 0.05); // Slow aging (up to 20s life)
         
-        // Swirl interaction
+        // Soft noise movement
+        vx += (Math.sin(state.clock.elapsedTime * 0.5 + i) * 0.5) * safeDelta;
+        
+        // Hover push interaction
         if (!returningToNormal) {
           const dx = px - ms.x;
           const dy = py - ms.y;
           const distSq = dx*dx + dy*dy;
-          if (distSq < 4000) {
+          const radiusSq = VISUAL_CONFIG.MOUSE_RADIUS * VISUAL_CONFIG.MOUSE_RADIUS;
+          if (distSq < radiusSq) {
             const dist = Math.sqrt(distSq);
-            const force = (1.0 - dist / 63.0) * 5.0; // 63 is approx sqrt(4000)
-            vx += ms.vx * force * delta + (dy / dist) * force * 10;
-            vy += ms.vy * force * delta - (dx / dist) * force * 10;
-            // heat up
-            age = Math.max(0, age - force * delta);
+            const force = (1.0 - dist / VISUAL_CONFIG.MOUSE_RADIUS) * VISUAL_CONFIG.MOUSE_FORCE;
+            vx += (dx / dist) * force * 10 * safeDelta;
+            vy += (dy / dist) * force * 10 * safeDelta;
           }
         }
 
-        // Return to normal (drag/damping)
-        vx = THREE.MathUtils.lerp(vx, (Math.sin(state.clock.elapsedTime + i) * 5), delta * 2);
-        vy = THREE.MathUtils.lerp(vy, 10 + Math.cos(state.clock.elapsedTime * 0.5 + i) * 5, delta * 2);
+        // Return to normal drift
+        vx = THREE.MathUtils.lerp(vx, (Math.sin(i) * VISUAL_CONFIG.DRIFT_SPEED), safeDelta * 2);
+        vy = THREE.MathUtils.lerp(vy, VISUAL_CONFIG.DRIFT_SPEED * (0.5 + Math.random()), safeDelta * 2);
         
-        if (age >= 1.0 || py > h/2 + 20) {
-          // Respawn at bottom
+        if (age >= 1.0) {
+          // Respawn randomly
           age = 0;
-          data.pos[i * 3] = (Math.random() - 0.5) * w * 1.5;
-          data.pos[i * 3 + 1] = -h/2 - 20 - Math.random() * 50;
-          vx = (Math.random() - 0.5) * 10;
-          vy = 5 + Math.random() * 20;
+          data.pos[i * 3] = (Math.random() - 0.5) * w * 1.2;
+          data.pos[i * 3 + 1] = (Math.random() - 0.5) * h * 1.2;
+          vx = (Math.random() - 0.5) * VISUAL_CONFIG.DRIFT_SPEED;
+          vy = VISUAL_CONFIG.DRIFT_SPEED * (0.5 + Math.random());
         }
-      } else if (type === 2) { // Mouse FX
-        age += delta * (0.4 + Math.random() * 0.4); // Die faster
-        vy -= 20 * delta; // slight gravity
-        vx *= 0.95; // drag
-        vy *= 0.95;
+      } else if (type === 2) { // Mouse FX (Click/Drag)
+        age += safeDelta * 0.66; // 1.5s life max
+        vx *= 0.92; // Drag
+        vy *= 0.92;
         if (age >= 1.0) {
           data.info[i * 4 + 3] = 0; // kill
         }
         activeCount = Math.max(activeCount, i + 1);
       }
 
-      data.pos[i * 3] += vx * delta;
-      data.pos[i * 3 + 1] += vy * delta;
-      data.pos[i * 3 + 2] += data.vel[i * 3 + 2] * delta;
+      data.pos[i * 3] += vx * safeDelta;
+      data.pos[i * 3 + 1] += vy * safeDelta;
+      data.pos[i * 3 + 2] += data.vel[i * 3 + 2] * safeDelta;
       
       data.vel[i * 3] = vx;
       data.vel[i * 3 + 1] = vy;
@@ -309,18 +308,18 @@ export default function StarField() {
     // Drag fire spawn
     if (ms.isDown) {
       let spawned = 0;
-      for (let i = AMBIENT_COUNT; i < MAX_PARTICLES && spawned < 10; i++) {
+      for (let i = AMBIENT_COUNT; i < MAX_PARTICLES && spawned < 3; i++) {
         if (data.info[i * 4 + 3] === 0 || data.info[i * 4] >= 1.0) {
-          data.pos[i * 3] = ms.x + (Math.random() - 0.5) * 5;
-          data.pos[i * 3 + 1] = ms.y + (Math.random() - 0.5) * 5;
+          data.pos[i * 3] = ms.x + (Math.random() - 0.5) * 4;
+          data.pos[i * 3 + 1] = ms.y + (Math.random() - 0.5) * 4;
           data.pos[i * 3 + 2] = 5;
           
-          data.vel[i * 3] = ms.vx * 0.5 + (Math.random() - 0.5) * 20;
-          data.vel[i * 3 + 1] = ms.vy * 0.5 + 20 + Math.random() * 20; // flame goes up
-          data.vel[i * 3 + 2] = (Math.random() - 0.5) * 10;
+          data.vel[i * 3] = ms.vx * 0.2 + (Math.random() - 0.5) * 10;
+          data.vel[i * 3 + 1] = ms.vy * 0.2 + (Math.random() - 0.5) * 10; 
+          data.vel[i * 3 + 2] = (Math.random() - 0.5) * 5;
           
           data.info[i * 4] = 0; 
-          data.info[i * 4 + 1] = 2.0 + Math.random() * 4.0; // bigger fire particles
+          data.info[i * 4 + 1] = 1.0 + Math.random() * 2.0; // Delicate fire
           data.info[i * 4 + 2] = Math.random(); 
           data.info[i * 4 + 3] = 2; 
           spawned++;
@@ -328,7 +327,6 @@ export default function StarField() {
       }
     }
 
-    // Update attributes
     geometryRef.current.attributes.instancePos.needsUpdate = true;
     geometryRef.current.attributes.instanceVel.needsUpdate = true;
     geometryRef.current.attributes.instanceInfo.needsUpdate = true;
@@ -339,34 +337,19 @@ export default function StarField() {
   });
 
   return (
-    <>
-      {/* Background radial heat */}
-      <mesh position={[0, -viewport.height/2, -10]}>
-        <planeGeometry args={[viewport.width * 2, viewport.height]} />
-        <meshBasicMaterial 
-          transparent 
-          opacity={0.15} 
-          color="#ff3a00" 
-          blending={THREE.AdditiveBlending}
-          depthWrite={false}
-        />
-      </mesh>
-      
-      <instancedMesh ref={instancedMeshRef} args={[undefined, undefined, MAX_PARTICLES]} count={AMBIENT_COUNT}>
-        <planeGeometry args={[1, 1]} />
-        <shaderMaterial
-          transparent
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-          vertexShader={vertexShader}
-          fragmentShader={fragmentShader}
-        />
-        <instancedBufferGeometry ref={geometryRef} copy={new THREE.PlaneGeometry(1, 1)}>
-          <instancedBufferAttribute attach="attributes-instancePos" args={[data.pos, 3]} />
-          <instancedBufferAttribute attach="attributes-instanceVel" args={[data.vel, 3]} />
-          <instancedBufferAttribute attach="attributes-instanceInfo" args={[data.info, 4]} />
-        </instancedBufferGeometry>
-      </instancedMesh>
-    </>
+    <instancedMesh ref={instancedMeshRef} args={[null as any, null as any, MAX_PARTICLES]} count={AMBIENT_COUNT}>
+      <planeGeometry ref={geometryRef as any} args={[1, 1]}>
+        <instancedBufferAttribute attach="attributes-instancePos" args={[data.pos, 3]} />
+        <instancedBufferAttribute attach="attributes-instanceVel" args={[data.vel, 3]} />
+        <instancedBufferAttribute attach="attributes-instanceInfo" args={[data.info, 4]} />
+      </planeGeometry>
+      <shaderMaterial
+        transparent
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+        vertexShader={vertexShader}
+        fragmentShader={fragmentShader}
+      />
+    </instancedMesh>
   );
 }

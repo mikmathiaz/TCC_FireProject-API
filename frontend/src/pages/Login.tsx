@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Eye } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { ThermalMouseCanvas } from '../components/ThermalMouseCanvas';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -108,6 +109,9 @@ const Login = () => {
 
       {/* Subtle dark vignette overlay specifically on the left side to guarantee crisp text legibility */}
       <div className="absolute inset-y-0 left-0 w-full lg:w-[58%] bg-gradient-to-r from-[#050a2e]/90 via-[#050a2e]/65 to-transparent pointer-events-none z-[1]" />
+
+      {/* Interactive Thermal Mouse Heat Layer (Screen blend, over background, under cards/text) */}
+      <ThermalMouseCanvas />
 
       {/* Main container */}
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center relative z-10 my-auto">

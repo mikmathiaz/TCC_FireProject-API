@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Eye } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -41,25 +42,25 @@ const Login = () => {
           {/* Logo + Brand name */}
           <div className="flex items-center gap-3.5 mb-10 sm:mb-12">
             <div className="w-11 h-11 rounded-2xl bg-[#21243d] border border-white/[0.08] flex items-center justify-center shadow-inner">
-              <span className="text-[#a5b4fc] font-bold text-lg leading-none">N</span>
+              <Eye className="w-5 h-5 text-[#a5b4fc]" />
             </div>
             <div className="flex flex-col">
-              <span className="text-white font-bold text-base tracking-tight leading-snug">Nexo</span>
-              <span className="text-slate-400 text-xs font-normal">Sistema pessoal de IA</span>
+              <span className="text-white font-bold text-base tracking-tight leading-snug">Fire Watcher</span>
+              <span className="text-slate-400 text-xs font-normal">Monitoramento de focos de incêndio</span>
             </div>
           </div>
 
           {/* Heading */}
           <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-bold tracking-tight leading-[1.15] mb-5">
-            <span className="text-white block">Sua inteligência,</span>
+            <span className="text-white block">Proteção ambiental,</span>
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#67e8f9] via-[#c084fc] to-[#f472b6]">
-              em um só lugar.
+              com visão computacional.
             </span>
           </h1>
 
           {/* Description */}
           <p className="text-slate-400 text-sm sm:text-base leading-relaxed mb-10 max-w-lg font-normal">
-            O Nexo reúne seus projetos, contextos e agentes em um painel único. Faça login para retomar de onde parou.
+            Fire Watcher tem como objetivo monitorar em tempo real áreas de preservação, identificando focos e emitindo alertas.
           </p>
 
           {/* Status / Feature Cards */}
@@ -69,10 +70,10 @@ const Login = () => {
             <div className="rounded-2xl bg-[#141824]/75 border border-slate-700/30 px-5 py-4 backdrop-blur-md shadow-sm transition-all hover:border-slate-600/40">
               <div className="flex items-center gap-2.5">
                 <span className="w-2 h-2 rounded-full bg-[#34d399] shadow-[0_0_10px_#34d399]" />
-                <span className="text-white text-sm font-semibold tracking-tight">Agentes sincronizados</span>
+                <span className="text-white text-sm font-semibold tracking-tight">Modelo de Machine Learning</span>
               </div>
               <p className="text-slate-400 text-xs mt-1 pl-[18px]">
-                3 agentes ativos em seus projetos
+                2 modelos treinados pro foco
               </p>
             </div>
 
@@ -80,10 +81,10 @@ const Login = () => {
             <div className="rounded-2xl bg-[#141824]/75 border border-slate-700/30 px-5 py-4 backdrop-blur-md shadow-sm transition-all hover:border-slate-600/40">
               <div className="flex items-center gap-2.5">
                 <span className="w-2 h-2 rounded-full bg-slate-300 shadow-[0_0_8px_rgba(255,255,255,0.7)]" />
-                <span className="text-white text-sm font-semibold tracking-tight">Contexto persistente</span>
+                <span className="text-white text-sm font-semibold tracking-tight">Alertas em Tempo Real</span>
               </div>
               <p className="text-slate-400 text-xs mt-1 pl-[18px]">
-                Conversas salvas com histórico completo
+                com métricas especializadas
               </p>
             </div>
 
@@ -100,7 +101,7 @@ const Login = () => {
                 Bem-vindo de volta
               </h2>
               <p className="text-slate-400 text-sm">
-                Acesse seu painel pessoal
+                Acesse seu painel
               </p>
             </div>
 
@@ -166,7 +167,7 @@ const Login = () => {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="voce@nexo.app"
+                  placeholder="seu@email.com"
                   className="w-full h-11 px-4 bg-[#1f2434]/80 border border-slate-700/50 rounded-xl text-white text-sm placeholder-slate-400 focus:outline-none focus:border-indigo-500/80 focus:ring-1 focus:ring-indigo-500/50 transition-all"
                 />
               </div>

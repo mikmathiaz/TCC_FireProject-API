@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Eye } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -12,24 +13,78 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#0c0e17] text-white flex items-center justify-center relative overflow-hidden font-sans select-none antialiased px-4 py-8 sm:px-6 lg:px-12">
-      {/* Ambient background glows */}
-      <div 
-        className="absolute -top-[15%] -left-[10%] w-[650px] h-[650px] rounded-full pointer-events-none opacity-40 blur-[130px]"
+    <div className="min-h-screen w-full bg-[#050713] text-white flex items-center justify-center relative overflow-hidden font-sans select-none antialiased px-4 py-8 sm:px-6 lg:px-12">
+      {/* Animated Deep Thermal Infrared Orbs (Cold Blue, Vivid Purple, Lime Green, Fiery Red) */}
+      
+      {/* Orb 1: Strong Cobalt Blue & Violet (Top-Left) */}
+      <motion.div 
+        animate={{
+          x: [0, 90, -50, 0],
+          y: [0, -60, 45, 0],
+          scale: [1, 1.08, 0.95, 1],
+        }}
+        transition={{
+          duration: 22,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="absolute -top-[15%] -left-[10%] w-[880px] h-[880px] rounded-full pointer-events-none opacity-55 blur-[140px]"
         style={{
-          background: 'radial-gradient(circle, rgba(99, 102, 241, 0.45) 0%, rgba(79, 70, 229, 0.2) 50%, transparent 75%)'
+          background: 'radial-gradient(circle, rgba(0, 85, 255, 0.7) 0%, rgba(124, 58, 237, 0.5) 45%, transparent 75%)'
         }}
       />
-      <div 
-        className="absolute -bottom-[20%] right-[5%] w-[600px] h-[600px] rounded-full pointer-events-none opacity-25 blur-[140px]"
+
+      {/* Orb 2: Hot Infrared Red, Orange & Solar Yellow (Bottom-Right) */}
+      <motion.div 
+        animate={{
+          x: [0, -80, 60, 0],
+          y: [0, 60, -45, 0],
+          scale: [1, 0.93, 1.07, 1],
+        }}
+        transition={{
+          duration: 25,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="absolute -bottom-[20%] -right-[5%] w-[860px] h-[860px] rounded-full pointer-events-none opacity-45 blur-[150px]"
         style={{
-          background: 'radial-gradient(circle, rgba(20, 184, 166, 0.4) 0%, rgba(13, 148, 136, 0.15) 50%, transparent 75%)'
+          background: 'radial-gradient(circle, rgba(255, 0, 56, 0.65) 0%, rgba(255, 110, 0, 0.45) 40%, rgba(255, 220, 0, 0.25) 65%, transparent 80%)'
         }}
       />
-      <div 
-        className="absolute top-[40%] right-[35%] w-[450px] h-[450px] rounded-full pointer-events-none opacity-15 blur-[120px]"
+
+      {/* Orb 3: Thermal Green & Cyan Transition Wave (Center / Left) */}
+      <motion.div 
+        animate={{
+          x: [0, 60, -70, 0],
+          y: [0, 45, -55, 0],
+          scale: [0.95, 1.06, 0.98, 0.95],
+        }}
+        transition={{
+          duration: 19,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="absolute top-[25%] left-[25%] w-[760px] h-[760px] rounded-full pointer-events-none opacity-30 blur-[135px]"
         style={{
-          background: 'radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%)'
+          background: 'radial-gradient(circle, rgba(0, 230, 64, 0.45) 0%, rgba(0, 180, 255, 0.3) 50%, transparent 75%)'
+        }}
+      />
+
+      {/* Orb 4: Deep Thermal Purple & Magenta Glow (Top-Right Behind Card) */}
+      <motion.div 
+        animate={{
+          x: [0, -50, 70, 0],
+          y: [0, -35, 45, 0],
+          scale: [1, 1.05, 0.94, 1],
+        }}
+        transition={{
+          duration: 24,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="absolute top-[10%] right-[15%] w-[720px] h-[720px] rounded-full pointer-events-none opacity-40 blur-[140px]"
+        style={{
+          background: 'radial-gradient(circle, rgba(147, 51, 234, 0.6) 0%, rgba(219, 39, 119, 0.35) 45%, transparent 75%)'
         }}
       />
 
@@ -41,49 +96,49 @@ const Login = () => {
           
           {/* Logo + Brand name */}
           <div className="flex items-center gap-3.5 mb-10 sm:mb-12">
-            <div className="w-11 h-11 rounded-2xl bg-[#21243d] border border-white/[0.08] flex items-center justify-center shadow-inner">
-              <Eye className="w-5 h-5 text-[#a5b4fc]" />
+            <div className="w-11 h-11 rounded-2xl bg-[#131130] border border-purple-500/40 flex items-center justify-center shadow-[0_0_20px_rgba(124,58,237,0.35)]">
+              <Eye className="w-5 h-5 text-[#38bdf8]" />
             </div>
             <div className="flex flex-col">
               <span className="text-white font-bold text-base tracking-tight leading-snug">Fire Watcher</span>
-              <span className="text-slate-400 text-xs font-normal">Monitoramento de focos de incêndio</span>
+              <span className="text-indigo-200/70 text-xs font-normal">Monitoramento de focos de incêndio</span>
             </div>
           </div>
 
-          {/* Heading */}
+          {/* Heading with the True Thermal Rainbow Palette (Azul Forte -> Roxo -> Verde Forte -> Amarelo Forte -> Vermelho Forte) */}
           <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-bold tracking-tight leading-[1.15] mb-5">
             <span className="text-white block">Proteção ambiental,</span>
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#67e8f9] via-[#c084fc] to-[#f472b6]">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#0055ff] via-[#7c3aed] via-[#00e600] via-[#ffea00] to-[#ff0038]">
               com visão computacional.
             </span>
           </h1>
 
           {/* Description */}
-          <p className="text-slate-400 text-sm sm:text-base leading-relaxed mb-10 max-w-lg font-normal">
+          <p className="text-slate-300/80 text-sm sm:text-base leading-relaxed mb-10 max-w-lg font-normal">
             Fire Watcher tem como objetivo monitorar em tempo real áreas de preservação, identificando focos e emitindo alertas.
           </p>
 
           {/* Status / Feature Cards */}
           <div className="space-y-3.5 w-full max-w-md">
             
-            {/* Feature 1 */}
-            <div className="rounded-2xl bg-[#141824]/75 border border-slate-700/30 px-5 py-4 backdrop-blur-md shadow-sm transition-all hover:border-slate-600/40">
+            {/* Feature 1 - Cold/Normal Thermal Zone (Strong Blue/Indigo) */}
+            <div className="rounded-2xl bg-[#0c122b]/85 border border-indigo-500/30 px-5 py-4 backdrop-blur-xl shadow-lg shadow-blue-950/30 transition-all hover:border-indigo-400/50 hover:shadow-indigo-500/20">
               <div className="flex items-center gap-2.5">
-                <span className="w-2 h-2 rounded-full bg-[#34d399] shadow-[0_0_10px_#34d399]" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#38bdf8] shadow-[0_0_12px_#38bdf8]" />
                 <span className="text-white text-sm font-semibold tracking-tight">Modelo de Machine Learning</span>
               </div>
-              <p className="text-slate-400 text-xs mt-1 pl-[18px]">
+              <p className="text-indigo-200/60 text-xs mt-1 pl-[20px]">
                 2 modelos treinados pro foco
               </p>
             </div>
 
-            {/* Feature 2 */}
-            <div className="rounded-2xl bg-[#141824]/75 border border-slate-700/30 px-5 py-4 backdrop-blur-md shadow-sm transition-all hover:border-slate-600/40">
+            {/* Feature 2 - Hotspot Zone (Thermal Purple to Hot Red) */}
+            <div className="rounded-2xl bg-[#120f2e]/85 border border-purple-500/30 px-5 py-4 backdrop-blur-xl shadow-lg shadow-purple-950/30 transition-all hover:border-purple-400/50 hover:shadow-purple-500/20">
               <div className="flex items-center gap-2.5">
-                <span className="w-2 h-2 rounded-full bg-slate-300 shadow-[0_0_8px_rgba(255,255,255,0.7)]" />
+                <span className="w-2.5 h-2.5 rounded-full bg-[#ec4899] shadow-[0_0_12px_#ec4899]" />
                 <span className="text-white text-sm font-semibold tracking-tight">Alertas em Tempo Real</span>
               </div>
-              <p className="text-slate-400 text-xs mt-1 pl-[18px]">
+              <p className="text-purple-200/60 text-xs mt-1 pl-[20px]">
                 com métricas especializadas
               </p>
             </div>
@@ -93,14 +148,14 @@ const Login = () => {
 
         {/* Right Column - Login Card */}
         <div className="lg:col-span-5 w-full flex justify-center lg:justify-end">
-          <div className="w-full max-w-[460px] rounded-[28px] bg-[#151926]/85 backdrop-blur-2xl border border-white/[0.08] p-7 sm:p-9 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.65),inset_0_1px_0_rgba(255,255,255,0.1)]">
+          <div className="w-full max-w-[460px] rounded-[28px] bg-[#0c1026]/90 backdrop-blur-2xl border border-indigo-500/25 p-7 sm:p-9 shadow-[0_32px_64px_-16px_rgba(2,6,23,0.85),inset_0_1px_0_rgba(168,85,247,0.25)]">
             
             {/* Card Header */}
             <div className="mb-6">
               <h2 className="text-2xl sm:text-[1.65rem] font-bold text-white tracking-tight mb-1">
                 Bem-vindo de volta
               </h2>
-              <p className="text-slate-400 text-sm">
+              <p className="text-indigo-200/70 text-sm">
                 Acesse seu painel
               </p>
             </div>
@@ -111,7 +166,7 @@ const Login = () => {
               {/* Google Button */}
               <button
                 type="button"
-                className="h-11 rounded-xl bg-[#1e2332]/90 hover:bg-[#262c3f] border border-white/[0.07] text-slate-200 text-sm font-medium flex items-center justify-center gap-2.5 transition-all shadow-sm active:scale-[0.98]"
+                className="h-11 rounded-xl bg-[#131a38]/90 hover:bg-[#1a234d] border border-indigo-500/20 text-slate-200 text-sm font-medium flex items-center justify-center gap-2.5 transition-all shadow-sm active:scale-[0.98]"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
                   <path
@@ -137,7 +192,7 @@ const Login = () => {
               {/* GitHub Button */}
               <button
                 type="button"
-                className="h-11 rounded-xl bg-[#1e2332]/90 hover:bg-[#262c3f] border border-white/[0.07] text-slate-200 text-sm font-medium flex items-center justify-center gap-2.5 transition-all shadow-sm active:scale-[0.98]"
+                className="h-11 rounded-xl bg-[#131a38]/90 hover:bg-[#1a234d] border border-indigo-500/20 text-slate-200 text-sm font-medium flex items-center justify-center gap-2.5 transition-all shadow-sm active:scale-[0.98]"
               >
                 <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
                   <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
@@ -149,8 +204,8 @@ const Login = () => {
 
             {/* Divider */}
             <div className="relative my-6 flex items-center justify-center">
-              <div className="border-t border-slate-700/40 w-full" />
-              <span className="absolute bg-[#151926] px-3 text-[10px] sm:text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
+              <div className="border-t border-indigo-500/25 w-full" />
+              <span className="absolute bg-[#0c1026] px-3 text-[10px] sm:text-[11px] font-semibold tracking-wider text-indigo-300/70 uppercase">
                 OU COM E-MAIL
               </span>
             </div>
@@ -160,7 +215,7 @@ const Login = () => {
               
               {/* E-mail */}
               <div>
-                <label className="text-xs font-medium text-slate-300 mb-1.5 block">
+                <label className="text-xs font-medium text-indigo-200/80 mb-1.5 block">
                   E-mail
                 </label>
                 <input
@@ -168,13 +223,13 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="seu@email.com"
-                  className="w-full h-11 px-4 bg-[#1f2434]/80 border border-slate-700/50 rounded-xl text-white text-sm placeholder-slate-400 focus:outline-none focus:border-indigo-500/80 focus:ring-1 focus:ring-indigo-500/50 transition-all"
+                  className="w-full h-11 px-4 bg-[#12193b]/80 border border-indigo-500/30 rounded-xl text-white text-sm placeholder-indigo-300/40 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400/50 transition-all"
                 />
               </div>
 
               {/* Password */}
               <div>
-                <label className="text-xs font-medium text-slate-300 mb-1.5 block">
+                <label className="text-xs font-medium text-indigo-200/80 mb-1.5 block">
                   Senha
                 </label>
                 <input
@@ -182,7 +237,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full h-11 px-4 bg-[#1f2434]/80 border border-slate-700/50 rounded-xl text-white text-sm placeholder-slate-400 focus:outline-none focus:border-indigo-500/80 focus:ring-1 focus:ring-indigo-500/50 transition-all tracking-widest"
+                  className="w-full h-11 px-4 bg-[#12193b]/80 border border-indigo-500/30 rounded-xl text-white text-sm placeholder-indigo-300/40 focus:outline-none focus:border-purple-400 focus:ring-1 focus:ring-purple-400/50 transition-all tracking-widest"
                 />
               </div>
 
@@ -193,24 +248,24 @@ const Login = () => {
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-600 bg-slate-800/90 text-indigo-500 focus:ring-0 focus:ring-offset-0 cursor-pointer accent-indigo-500"
+                    className="w-4 h-4 rounded border-indigo-500/40 bg-indigo-950/80 text-purple-500 focus:ring-0 focus:ring-offset-0 cursor-pointer accent-purple-500"
                   />
-                  <span className="text-slate-400 group-hover:text-slate-300 ml-2 transition-colors">
+                  <span className="text-indigo-200/70 group-hover:text-indigo-200 ml-2 transition-colors">
                     Manter conectado
                   </span>
                 </label>
                 <a
                   href="#"
-                  className="text-slate-400 hover:text-slate-200 transition-colors"
+                  className="text-purple-400 hover:text-purple-300 transition-colors"
                 >
                   Esqueci a senha
                 </a>
               </div>
 
-              {/* Submit Button */}
+              {/* Submit Button with the Complete Thermal Spectrum (Strong Blue -> Purple -> Magenta -> Orange -> Yellow) */}
               <button
                 type="submit"
-                className="w-full h-12 rounded-xl font-semibold text-sm sm:text-base text-slate-900 bg-gradient-to-r from-[#a5f3fc] via-[#c4b5fd] to-[#f472b6] hover:opacity-95 hover:shadow-[0_0_24px_rgba(244,114,182,0.3)] active:scale-[0.99] transition-all duration-200 flex items-center justify-center cursor-pointer"
+                className="w-full h-12 rounded-xl font-bold text-sm sm:text-base text-white bg-gradient-to-r from-[#2563eb] via-[#7c3aed] via-[#db2777] via-[#ea580c] to-[#facc15] hover:opacity-95 hover:shadow-[0_0_30px_rgba(124,58,237,0.45)] active:scale-[0.99] transition-all duration-200 flex items-center justify-center cursor-pointer"
               >
                 Entrar no painel
               </button>
@@ -220,7 +275,7 @@ const Login = () => {
             {/* Card Footer */}
             <div className="mt-6 text-center text-xs sm:text-sm text-slate-400">
               <span>Novo por aqui? </span>
-              <a href="#" className="text-white font-medium hover:underline ml-0.5">
+              <a href="#" className="text-purple-400 hover:text-purple-300 font-medium hover:underline ml-0.5">
                 Criar conta
               </a>
             </div>

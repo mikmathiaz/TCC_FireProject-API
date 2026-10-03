@@ -226,19 +226,25 @@ function setLoadingState(isLoading) {
  * const data = await response.json();
  */
 async function handleLogin(username, password) {
-    // Simulação de latência de rede de 1,2 segundos
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    // Simulação de latência de rede suave (0.8 segundos)
+    await new Promise((resolve) => setTimeout(resolve, 800));
 
-    // Exemplo de teste para simular credencial inválida
-    if (username.toLowerCase() === "erro") {
-        throw new Error("Credenciais inválidas. Usuário não autorizado.");
+    const cleanUser = username.trim().toLowerCase();
+    const cleanPass = password.trim();
+
+    const isUserValid = cleanUser === "teste" || cleanUser.startsWith("teste@");
+    const isPassValid = cleanPass === "teste";
+
+    if (!isUserValid || !isPassValid) {
+        throw new Error("Credenciais inválidas. Para testar utilize usuário 'teste' e senha 'teste'.");
     }
 
-    // Sucesso simulado
-    showAlert("Autenticação realizada com sucesso. Redirecionando...", "success");
+    // Sucesso
+    showAlert("Autenticação realizada com sucesso. Acessando painel...", "success");
 
-    // Transição suave para o painel Streamlit
+    // Redireciona para o painel da aplicação
     setTimeout(() => {
-        window.location.href = REDIRECT_URL;
-    }, 400);
+        // Se a porta 5173 (React Vite) estiver ativa, direciona para o dashboard
+        window.location.href = "http://localhost:5173/dashboard";
+    }, 450);
 }

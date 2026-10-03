@@ -2,15 +2,35 @@ import { useState } from 'react';
 import { Eye } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ThermalMouseCanvas } from '../components/ThermalMouseCanvas';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login attempt:', { email, rememberMe });
+    setErrorMessage('');
+
+    if (!email.trim() && !password.trim()) {
+      setErrorMessage('Informe o usuário e a senha.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    // Latência sutil simulada para transição elegante
+    await new Promise((r) => setTimeout(r, 450));
+
+    const result = await login(email, password, rememberMe);
+    if (!result.success) {
+      setIsLoading(false);
+      setErrorMessage(result.error || 'Credenciais inválidas.');
+    }
   };
 
   return (
@@ -252,17 +272,20 @@ const Login = () => {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={handleLogin} noValidate className="space-y-4">
               
-              {/* E-mail */}
+              {/* E-mail / Usuário */}
               <div>
                 <label className="text-xs font-medium text-slate-300 mb-1.5 block">
                   E-mail
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (errorMessage) setErrorMessage('');
+                  }}
                   placeholder="seu@email.com"
                   className="w-full h-11 px-4 bg-white/[0.04] border border-white/[0.12] rounded-xl text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#12d4e8] focus:ring-1 focus:ring-[#12d4e8]/50 transition-all"
                 />
@@ -276,7 +299,10 @@ const Login = () => {
                 <input
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errorMessage) setErrorMessage('');
+                  }}
                   placeholder="••••••••"
                   className="w-full h-11 px-4 bg-white/[0.04] border border-white/[0.12] rounded-xl text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#12d4e8] focus:ring-1 focus:ring-[#12d4e8]/50 transition-all tracking-widest"
                 />
@@ -303,15 +329,34 @@ const Login = () => {
                 </a>
               </div>
 
+              {/* Error feedback if needed */}
+              {errorMessage && (
+                <div className="px-3.5 py-2 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-xs flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
               {/* Submit Button (Warm orange to red gradient) */}
               <button
                 type="submit"
-                className="w-full h-12 rounded-xl font-bold text-sm sm:text-base text-white transition-all duration-200 flex items-center justify-center cursor-pointer shadow-md hover:shadow-[0_0_24px_rgba(255,42,26,0.45)] hover:opacity-95 active:scale-[0.99]"
+                disabled={isLoading}
+                className="w-full h-12 rounded-xl font-bold text-sm sm:text-base text-white transition-all duration-200 flex items-center justify-center cursor-pointer shadow-md hover:shadow-[0_0_24px_rgba(255,42,26,0.45)] hover:opacity-95 active:scale-[0.99] disabled:opacity-85"
                 style={{
                   background: 'linear-gradient(90deg, #ff9a1a 0%, #ff2a1a 100%)',
                 }}
               >
-                Entrar no painel
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    <span>Entrando no painel...</span>
+                  </div>
+                ) : (
+                  'Entrar no painel'
+                )}
               </button>
 
             </form>

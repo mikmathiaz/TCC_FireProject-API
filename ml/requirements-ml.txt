@@ -1,0 +1,20 @@
+# ========================================================
+# Fire Watcher — Dependências de Machine Learning (FLAME 3)
+# ========================================================
+# Este arquivo lista os pacotes necessários para o pipeline de
+# Visão Computacional / Segmentação de Fogo (FLAME 3).
+# Mantido isolado de requirements.txt (backend FastAPI/Streamlit).
+
+# 1. Processamento de Dados, Imagens e Métricas
+numpy>=1.24.0
+pandas>=2.0.0
+Pillow>=9.5.0
+tifffile>=2023.7.10       # Leitura radiométrica de arquivos TIFF float32 (°C)
+matplotlib>=3.7.0         # Visualização e gráficos comparativos
+tqdm>=4.65.0              # Barras de progresso para scripts CLI
+
+# 2. Deep Learning & Segmentação Semântica (Google Colab / GPU)
+torch>=2.0.0
+torchvision>=0.15.0
+segmentation-models-pytorch>=0.3.3   # Arquitetura U-Net com encoders pré-treinados (ResNet34)
+albumentations>=1.3.0                # Augmentações geométricas/espaciais sincronizadas

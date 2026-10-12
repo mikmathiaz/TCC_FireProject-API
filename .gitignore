@@ -34,3 +34,13 @@ logs/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Machine Learning / FLAME 3 Dataset & Checkpoints
+ml/data/
+ml/checkpoints/
+ml/outputs/
+*.tif
+*.tiff
+*.pth
+*.pt
+*.zip

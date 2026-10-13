@@ -44,3 +44,9 @@ ml/outputs/
 *.pth
 *.pt
 *.zip
+
+# Ambientes e dependências extras
+.venv-ml/
+node_modules/
+dist/
+.ipynb_checkpoints/

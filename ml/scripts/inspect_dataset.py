@@ -29,6 +29,17 @@ import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+if hasattr(sys.stderr, "reconfigure"):
+    try:
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 import numpy as np
 
 # Tentativa de importação de leitor de TIFF com fallback gracioso:

@@ -128,7 +128,12 @@ def treinar_uma_epoca(
 
         optimizer.zero_grad(set_to_none=True)
 
-        with torch.cuda.amp.autocast(enabled=use_amp):
+        autocast_ctx = (
+            torch.amp.autocast(device_type="cuda", enabled=use_amp)
+            if hasattr(torch, "amp") and hasattr(torch.amp, "autocast")
+            else torch.cuda.amp.autocast(enabled=use_amp)
+        )
+        with autocast_ctx:
             logits = model(images)
             loss = criterion(logits, masks)
 
@@ -171,7 +176,12 @@ def validar(
         images = lote["image"].to(device, non_blocking=True)
         masks = lote["mask"].to(device, non_blocking=True)
 
-        with torch.cuda.amp.autocast(enabled=use_amp):
+        autocast_ctx = (
+            torch.amp.autocast(device_type="cuda", enabled=use_amp)
+            if hasattr(torch, "amp") and hasattr(torch.amp, "autocast")
+            else torch.cuda.amp.autocast(enabled=use_amp)
+        )
+        with autocast_ctx:
             logits = model(images)
             loss = criterion(logits, masks)
 
@@ -282,8 +292,10 @@ def executar_treinamento(args):
         return criterion_bce(logits, targets) + criterion_dice(logits, targets)
 
     # 4. Otimizador AdamW
-    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
-    scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
+    if hasattr(torch, "amp") and hasattr(torch.amp, "GradScaler"):
+        scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
+    else:
+        scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
 
     start_epoch = 1
     best_val_iou = 0.0

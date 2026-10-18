@@ -68,14 +68,11 @@ def obter_transforms(split: str) -> Optional[object]:
         return A.Compose([
             A.HorizontalFlip(p=0.5),
             A.VerticalFlip(p=0.5),
-            A.RandomRotate90(p=0.5),
             A.ShiftScaleRotate(
                 shift_limit=0.05,
                 scale_limit=0.08,
                 rotate_limit=15,
                 border_mode=0,
-                value=0,
-                mask_value=0,
                 p=0.5
             ),
             A.Normalize(

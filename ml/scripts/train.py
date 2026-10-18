@@ -226,7 +226,8 @@ def executar_treinamento(args):
     output_dir = Path(args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    num_epocas = 30 if args.smoke else args.epochs
+    num_epocas = 35 if args.smoke else args.epochs
+    lr_efetivo = 3e-4 if (args.smoke and args.lr == 1e-4) else args.lr
 
     print("=" * 80)
     print("🔥 FIRE WATCHER — PIPELINE DE TREINAMENTO U-NET (RESNET34)")
@@ -237,7 +238,7 @@ def executar_treinamento(args):
     print(f"📁 Diretório de Dados:     {data_dir}")
     print(f"📁 Arquivo de Split:       {split_csv}")
     print(f"💾 Diretório Checkpoints:  {output_dir}")
-    print(f"🔄 Épocas:                 {num_epocas} | Batch Size: {args.batch_size} | LR: {args.lr}")
+    print(f"🔄 Épocas:                 {num_epocas} | Batch Size: {args.batch_size} | LR: {lr_efetivo}")
     print(f"🧪 Modo Smoke Test:        {args.smoke}")
     print("=" * 80)
 
@@ -251,7 +252,8 @@ def executar_treinamento(args):
             split="train",
             batch_size=args.batch_size,
             is_smoke=True,
-            num_workers=0
+            num_workers=0,
+            shuffle=False
         )
         val_loader = train_loader  # Em smoke test, valida no mesmo conjunto para checar capacidade de overfit
     else:
@@ -292,7 +294,7 @@ def executar_treinamento(args):
         return criterion_bce(logits, targets) + criterion_dice(logits, targets)
 
     # 4. Otimizador AdamW
-    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=lr_efetivo, weight_decay=args.weight_decay)
     if hasattr(torch, "amp") and hasattr(torch.amp, "GradScaler"):
         scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
     else:

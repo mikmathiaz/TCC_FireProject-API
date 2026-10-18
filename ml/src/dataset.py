@@ -156,7 +156,9 @@ class FlameSegmentationDataset(Dataset):
         if len(self.df) == 0:
             raise ValueError(f"Nenhum registro encontrado no split '{self.split}' em {self.split_csv_path}")
 
-        self.transform = transform if transform is not None else obter_transforms(self.split)
+        # Em smoke mode (overfitting sanity check), desativa aumentações para testar memorização determinística
+        split_transforms = "val" if self.is_smoke else self.split
+        self.transform = transform if transform is not None else obter_transforms(split_transforms)
 
     def __len__(self) -> int:
         return len(self.df)

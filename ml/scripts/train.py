@@ -292,6 +292,7 @@ def executar_treinamento(args):
         return criterion_bce(logits, targets) + criterion_dice(logits, targets)
 
     # 4. Otimizador AdamW
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     if hasattr(torch, "amp") and hasattr(torch.amp, "GradScaler"):
         scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
     else:

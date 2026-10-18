@@ -124,6 +124,7 @@ class FlameSegmentationDataset(Dataset):
             raise ValueError(f"Modalidade inválida: '{modality}'. Escolha 'rgb' ou 'thermal'.")
 
         self.split = split.lower().strip()
+        self.is_smoke = is_smoke
         self.data_dir = Path(data_dir).resolve()
 
         if mask_dir is not None:

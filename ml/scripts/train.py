@@ -226,8 +226,8 @@ def executar_treinamento(args):
     output_dir = Path(args.output_dir).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    num_epocas = 35 if args.smoke else args.epochs
-    lr_efetivo = 3e-4 if (args.smoke and args.lr == 1e-4) else args.lr
+    num_epocas = 60 if args.smoke else args.epochs
+    lr_efetivo = 5e-4 if (args.smoke and args.lr == 1e-4) else args.lr
 
     print("=" * 80)
     print("🔥 FIRE WATCHER — PIPELINE DE TREINAMENTO U-NET (RESNET34)")
@@ -410,6 +410,11 @@ def executar_treinamento(args):
                 f"{val_metrics['recall']:^10.4f} | "
                 f"{t_decorrido:^6.1f}s{destaque_melhor}"
             )
+
+            # Encerramento antecipado em smoke test assim que a meta é atingida
+            if args.smoke and best_val_iou >= 0.80:
+                print(f"\n🎯 [SMOKE MODE] Meta de sanidade alcançada com sucesso na época {epoca:03d}! (Val IoU = {best_val_iou:.4f} >= 0.80)")
+                break
 
     finally:
         f_log.close()
